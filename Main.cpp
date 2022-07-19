@@ -141,7 +141,7 @@ int main(){
         bitMaskUpper |= 1ULL << i;
     }
     
-    //Gerar População Aleatória
+    //Gera População Aleatória
     vector<ull> populacao(pop_size);
     for(int i = 0; i < pop_size; i++){
         ull numero = random(minValue, maxValue);
@@ -155,7 +155,8 @@ int main(){
     
     //Treino
     for(int i = 0; i < num_ger; i++){
-        //Classificação dos indivíduos
+        
+        //Classificação dos indivíduos para a roleta
         vector<double> acumulado(pop_size);
         for(int j = 0; j < pop_size; j++){
             ull x =  populacao[j] >> 22;
@@ -173,6 +174,7 @@ int main(){
         //Gerar a nova população
         vector<ull> novaPopulacao;
         for(int j = 0; j < (pop_size/2); j++){
+            
             //Seleciona Pai
             double aleatoria1 = randomDouble(0.0, maior);
             //cout<<aleatoria1<<"\n";
@@ -216,10 +218,13 @@ int main(){
             }   
             
         }  
+        
         //Mutação
         for(int j = 0; j < pop_size;  j++){
            novaPopulacao[j] = controleMutacao(novaPopulacao[j], mascarasMutacao, taxaMutacao);
         }
+        
+        //Substitui o pior filho pelo melhor pai
         int indiceMelhorPai = melhorIndividuo(populacao, bitMaskLower, fator); 
         int indicePiorFilho = piorIndividuo(novaPopulacao, bitMaskLower, fator); 
         novaPopulacao[indicePiorFilho] = populacao[indiceMelhorPai];
@@ -227,16 +232,14 @@ int main(){
     }
     
     
-
+    //Acha a melhor solução e imprime na tela
     int indiceMelhorSolucao = melhorIndividuo(populacao, bitMaskLower, fator);
     ull x =  populacao[indiceMelhorSolucao] >> 22;
     ull y =  populacao[indiceMelhorSolucao] & bitMaskLower;  
     double xD = x * fator - 100.0; 
     double yD = y * fator - 100.0;
     double melhorSolucao = F6(xD, yD);
-    
-   
     cout <<"Melhor solução encontrada: " << melhorSolucao << "\n";
-    cout << "Índice da melhor solução : "  << indiceMelhorSolucao << "\n";
+    
     return 0;  
 }    
