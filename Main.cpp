@@ -42,12 +42,22 @@ double F6(double x, double y){
     return resultado;
 }
 
-void geraFilhos(ull mae, ull pai, ull &filho1, ull &filho2, ull bitMaskLower, ull bitMaskUpper){
-    filho1 = mae & bitMaskUpper;
-    filho1 |= pai & bitMaskLower;
+void geraFilhos(ull mae, ull pai, ull &filho1, ull &filho2, vector<ull> &mascaras){
+    // filho1 = mae & bitMaskUpper;
+    // filho1 |= pai & bitMaskLower;
     
-    filho2 = pai & bitMaskUpper;
-    filho2 |= mae & bitMaskLower;
+    // filho2 = pai & bitMaskUpper;
+    //filho2 |= mae & bitMaskLower;
+    
+    int aleatorio = randomInteger(1, 43);
+    
+    filho1 = mae >> aleatorio;
+    filho1 = filho1 << aleatorio;
+    filho1 |=  pai & mascaras[aleatorio - 1]; 
+   
+    filho2 =  pai >> aleatorio;
+    filho2 = filho2 << aleatorio;
+    filho2 |= mae & mascaras[aleatorio - 1];
 }
 
 ull controleMutacao(ull individuo, vector<ull> &mascaras, double taxaMutacao){
@@ -113,13 +123,14 @@ int main(){
     double fator = (double)(200.0/maxValue);
     double taxaCrossover =  0.65;
     double taxaMutacao = 0.008;
-    int pop_size = 10000;
+    int pop_size = 1000;
     int num_ger = 100;
     ull minValue = 0ULL;
     ull bitMaskLower = 0ULL;
     ull bitMaskUpper = 0ULL;
     ull bitMaskAux = 0ULL;
-    vector<ull> mascarasMutacao; 
+    vector<ull> mascarasMutacao;
+    vector<ull> mascarasCrossover;
     
     for(int i = 44; i < 64; i++){
         bitMaskAux |= 1ULL << i;
@@ -134,12 +145,20 @@ int main(){
         mascarasMutacao.push_back(auxMascara);
     }
     
+    ull auxMascaraCrossover = 0ULL;
+    for(int i = 0 ; i < 43; i++){
+        auxMascaraCrossover |= 1ULL << i;
+        mascarasCrossover.push_back(auxMascaraCrossover);
+            
+    }
+    
     for(int i = 0; i < 22; i++){
         bitMaskLower |= 1ULL << i;
     }
     for(int i = 22; i < 44; i++){
         bitMaskUpper |= 1ULL << i;
     }
+    
     
     //Gera População Aleatória
     vector<ull> populacao(pop_size);
@@ -209,7 +228,7 @@ int main(){
             double crossover = randomDouble(0.0, 1.0001);
             if(crossover <= taxaCrossover){
                     ull filho1 = 0ULL, filho2 = 0ULL;
-                    geraFilhos(populacao[indiceMae], populacao[indicePai], filho1, filho2, bitMaskLower, bitMaskUpper);
+                    geraFilhos(populacao[indiceMae], populacao[indicePai], filho1, filho2, mascarasCrossover);
                     novaPopulacao.push_back(filho1);
                     novaPopulacao.push_back(filho2);
             }else{
@@ -239,6 +258,8 @@ int main(){
     double xD = x * fator - 100.0; 
     double yD = y * fator - 100.0;
     double melhorSolucao = F6(xD, yD);
+    
+    cout <<"X: "<< xD<<"\n"<<"Y: "<<yD<<"\n";
     cout <<"Melhor solução encontrada: " << melhorSolucao << "\n";
     
     return 0;  
