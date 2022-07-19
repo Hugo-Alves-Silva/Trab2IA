@@ -113,8 +113,8 @@ int main(){
     double fator = (double)(200.0/maxValue);
     double taxaCrossover =  0.65;
     double taxaMutacao = 0.008;
-    int pop_size = 100;
-    int num_ger = 10;
+    int pop_size = 10000;
+    int num_ger = 100;
     ull minValue = 0ULL;
     ull bitMaskLower = 0ULL;
     ull bitMaskUpper = 0ULL;
@@ -220,31 +220,22 @@ int main(){
         for(int j = 0; j < pop_size;  j++){
            novaPopulacao[j] = controleMutacao(novaPopulacao[j], mascarasMutacao, taxaMutacao);
         }
+        int indiceMelhorPai = melhorIndividuo(populacao, bitMaskLower, fator); 
+        int indicePiorFilho = piorIndividuo(novaPopulacao, bitMaskLower, fator); 
+        novaPopulacao[indicePiorFilho] = populacao[indiceMelhorPai];
         populacao = novaPopulacao;  
     }
     
     
 
-    
-    ull x =  populacao[0] >> 22;
-    ull y =  populacao[0] & bitMaskLower;  
+    int indiceMelhorSolucao = melhorIndividuo(populacao, bitMaskLower, fator);
+    ull x =  populacao[indiceMelhorSolucao] >> 22;
+    ull y =  populacao[indiceMelhorSolucao] & bitMaskLower;  
     double xD = x * fator - 100.0; 
     double yD = y * fator - 100.0;
-    double resultado = F6(xD, yD);
-    double melhorSolucao = resultado;
-    int indiceMelhorSolucao = 0;
-    for(int i = 1; i < pop_size; i++){
-             x =  populacao[i] >> 22;
-             y =  populacao[i] & bitMaskLower;  
-             xD = x * fator - 100.0; 
-             yD = y * fator - 100.0;
-             resultado = F6(xD, yD);
-            if(resultado > melhorSolucao){
-                melhorSolucao = resultado;
-                indiceMelhorSolucao = i;
-            }
-         
-    }
+    double melhorSolucao = F6(xD, yD);
+    
+   
     cout <<"Melhor solução encontrada: " << melhorSolucao << "\n";
     cout << "Índice da melhor solução : "  << indiceMelhorSolucao << "\n";
     return 0;  
